@@ -1,6 +1,22 @@
 package com.brighttalk.entity;
 
-public class Order {
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import io.quarkus.panache.common.Sort;
+import org.hibernate.annotations.NaturalId;
+
+import javax.persistence.*;
+import javax.ws.rs.GET;
+import java.util.List;
+
+@Entity
+@Cacheable
+@Table(name="user")
+public class Order extends PanacheEntity {
+    @Id
+    @Column(name="id")
+    private int id;
+    @NaturalId
+    @Column(name="email")
     private String orderID;
     private String customerID;
     private Address pickupAddress;
@@ -9,6 +25,8 @@ public class Order {
     private String quantity;
     private String expectedDeliveryDate;
     private String status;
+
+
 
     public String getOrderID() {
         return orderID;
