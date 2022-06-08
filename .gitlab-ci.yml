@@ -1,5 +1,6 @@
 variables:
   container_name: quarkus-kafka
+  OPENSHIFT_PROJECT: quarkus-dev
   # This will suppress any download for dependencies and plugins or upload messages which would clutter the console log.
   # `showDateTime` will show the passed time in milliseconds. You need to specify `--batch-mode` to make this work.
   MAVEN_OPTS: >-
@@ -27,6 +28,23 @@ stages:
   - build
   - test
   - build-container
+
+.deploy_image: &deploy_image
+  image: widerin/openshift-cli
+  script:
+    #- sed -i 's,<LOWERCASE_NAME>,$APPLICATION_NAME,g' deployment.yaml
+    - >
+      sed -i "s,<LOWERCASE_NAME>,${APPLICATION_NAME},g;
+      s,<IMAGE_CONTAINER_PATH>,${IMAGE_REGISTRY_HOMELAB}${container_name},g;
+      s,<IMAGE_VERSION_TAG>,${IMAGE_TAG},g;
+      s,<APP_SUBDOMAIN>,$APP_SUBDOMAIN,g;
+      s,<BASE_OS_ROUTE>,$OPENSHIFT_DOMAIN,g;
+      s,<REST_ENDPOINT>,$REST_ENDPOINT,g"
+      deployment.yaml
+
+    - cat deployment.yaml
+    - oc login --token=${OC_GITLAB_SA} --server=${OC_API}
+    - oc apply deployment.yaml
 
 
 java-17-build:

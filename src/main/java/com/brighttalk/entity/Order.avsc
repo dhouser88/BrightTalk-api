@@ -1,0 +1,56 @@
+{
+    "namespace": "com.brighttalk.entity",
+    "type": "record",
+    "name": "Order",
+    "fields": [
+        {
+            "name": "order_id",
+            "type": "int"
+        },
+        {
+            "name": "customerID",
+             "type": "int"
+        },
+        {
+            "name": "productID",
+             "type": "int"
+        },
+        {
+            "name": "status",
+            "type": "string"
+        },
+        {
+            "name": "orderNumber",
+            "type": "string"
+        },
+        {
+            "name": "partnerID",
+             "type": "int"
+        },
+        {
+            "name": "orderQuantityTotal",
+             "type": "int"
+        },
+        {
+            "name": "salesorderline",
+            "type": {
+                "type": "record",
+                "name": "salesOrderLine",
+                "fields": [
+                    {
+                        "name": "name",
+                        "type": "string"
+                    },
+                    {
+                        "name": "product_id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "product_uom_qty",
+                        "type": "int"
+                    }
+                ]
+            }
+        }
+    ]
+}

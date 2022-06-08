@@ -2,55 +2,59 @@ package com.brighttalk.repository;
 
 import com.brighttalk.entity.Order;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.ws.rs.WebApplicationException;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Query;
+import javax.transaction.Transactional;
 import javax.ws.rs.core.Response;
 
+import com.google.gson.Gson;
 import io.quarkus.panache.common.Sort;
-import org.hibernate.Session;
-import org.hibernate.query.Query;
 import org.jboss.logging.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 
+@ApplicationScoped
 public class OrderRepositoryResource {
     @Inject
     OrderRepository orderRepository;
-
     @Inject
-    Session session;
+    EntityManagerFactory entityManagerFactory;
 
     private static final Logger LOGGER = Logger.getLogger(OrderRepositoryResource.class.getName());
 
 
-    public List<Order> get() {
-        return orderRepository.listAll(Sort.by("orderId"));
+    public List<String> get() {
+        Gson gson = new Gson();
+        List<String> orderJsons = new ArrayList<>();
+        List<Order>  orders = orderRepository.listAll(Sort.by("orderId"));
+        for(Order o : orders){
+            orderJsons.add(gson.toJson(o));
+        }
+        return orderJsons;
     }
 
-    public Order getSingle(String id) {
-        Order entity = null;
-        String hql = "FROM Order O WHERE O.OrderId = :orderId";
-        Query query = session.createQuery(hql);
-        query.setParameter("orderId",id);
-        List<Order> results = query.list();
-
-        if(results.size() == 1){
-            entity = results.get(0);
-        }
-
-
-        if (entity == null) {
-            throw new WebApplicationException("Order with id of " + id + " does not exist.", 404);
-        }
-        return entity;
+    public Response getSingle(int id) {
+        Gson gson = new Gson();
+        EntityManager em = entityManagerFactory.createEntityManager();
+        Query query = em.createQuery("SELECT o FROM Order o WHERE o.orderID = :orderid");
+        query.setParameter("orderid", id);
+        Order result = (Order) query.getSingleResult();
+        em.close();
+        return Response.ok(gson.toJson(result)).status(200).build();
     }
 
+    @Transactional
     public Response create(Order order) {
-        if (order.getOrderID() != null) {
-            throw new WebApplicationException("Id was invalidly set on request.", 422);
-        }
+        EntityManager em = entityManagerFactory.createEntityManager();
+        em.merge(order);
+        em.close();
+        //em.persist(order);
+        //orderRepository.persist(order);
 
-        orderRepository.persist(order);
         return Response.ok(order).status(201).build();
     }
 }

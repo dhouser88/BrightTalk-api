@@ -2,11 +2,10 @@ package com.brighttalk.controller;
 
 import com.brighttalk.entity.Order;
 import com.brighttalk.repository.OrderRepositoryResource;
+import com.brighttalk.service.KafkaService;
+import org.jboss.resteasy.annotations.jaxrs.PathParam;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
@@ -15,9 +14,11 @@ import java.util.List;
 public class RestController {
 
     OrderRepositoryResource orderRepositoryResource;
+    KafkaService kafkaService;
 
-    public RestController(OrderRepositoryResource orderRepositoryResource) {
+    public RestController(OrderRepositoryResource orderRepositoryResource, KafkaService kafkaService) {
         this.orderRepositoryResource = orderRepositoryResource;
+        this.kafkaService = kafkaService;
     }
 
     @GET
@@ -30,14 +31,14 @@ public class RestController {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Path("getOrders")
-    public List<Order> getOrders() {
+    public List<String> getOrders() {
         return orderRepositoryResource.get();
     }
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    @Path("getOrderByID")
-    public Order getOrderByID(String id) {
+    @Path("getOrderByID/{id}")
+    public Response getOrderByID(@PathParam int id) {
         return orderRepositoryResource.getSingle(id);
     }
 
@@ -45,7 +46,10 @@ public class RestController {
     @Produces(MediaType.TEXT_PLAIN)
     @Path("saveOrder")
     public Response saveOrder(Order order) {
+       // kafkaService.sendOrderToKafka(order);
+
         return orderRepositoryResource.create(order);
+
     }
 
 

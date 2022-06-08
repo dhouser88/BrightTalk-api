@@ -1,87 +1,91 @@
 package com.brighttalk.entity;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
-import io.quarkus.panache.common.Sort;
-import org.hibernate.annotations.NaturalId;
-
 import javax.persistence.*;
-import javax.ws.rs.GET;
-import java.util.List;
 
 @Entity
-@Cacheable
-@Table(name="user")
-public class Order extends PanacheEntity {
+@Table(name="orders")
+public class Order {
+    private Long id;
+
     @Id
-    @Column(name="id")
-    private int id;
-    @NaturalId
-    @Column(name="email")
-    private String orderID;
-    private String customerID;
-    private Address pickupAddress;
-    private Address destinationAddress;
-    private String productID;
-    private String quantity;
-    private String expectedDeliveryDate;
+    @SequenceGenerator(name = "orderSeq", sequenceName = "order_id_seq", allocationSize = 1, initialValue = 1)
+    @GeneratedValue(generator = "orderSeq")
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    private int orderID; // name colum
+    private int customerID; //SELECT * FROM public.sale_order
+   // private Address pickupAddress;
+    //private Address destinationAddress;
+    private int productID;
+    private int quantity;
+    //private String expectedDeliveryDate;
     private String status;
 
+    private String orderNumber;
 
+    private int partnerID;
 
-    public String getOrderID() {
+    private int orderQuantityTotal;
+
+    public int getOrderID() {
         return orderID;
     }
 
-    public void setOrderID(String orderID) {
+    public void setOrderID(int orderID) {
         this.orderID = orderID;
     }
 
-    public String getCustomerID() {
+    public int getCustomerID() {
         return customerID;
     }
 
-    public void setCustomerID(String customerID) {
+    public void setCustomerID(int customerID) {
         this.customerID = customerID;
     }
 
-    public Address getPickupAddress() {
-        return pickupAddress;
-    }
-
-    public void setPickupAddress(Address pickupAddress) {
-        this.pickupAddress = pickupAddress;
-    }
-
-    public Address getDestinationAddress() {
-        return destinationAddress;
-    }
-
-    public void setDestinationAddress(Address destinationAddress) {
-        this.destinationAddress = destinationAddress;
-    }
-
-    public String getProductID() {
+    public int getProductID() {
         return productID;
     }
 
-    public void setProductID(String productID) {
+    public void setProductID(int productID) {
         this.productID = productID;
     }
 
-    public String getQuantity() {
+    public int getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(String quantity) {
+    public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 
-    public String getExpectedDeliveryDate() {
-        return expectedDeliveryDate;
+    public String getOrderNumber() {
+        return orderNumber;
     }
 
-    public void setExpectedDeliveryDate(String expectedDeliveryDate) {
-        this.expectedDeliveryDate = expectedDeliveryDate;
+    public void setOrderNumber(String orderNumber) {
+        this.orderNumber = orderNumber;
+    }
+
+    public int getPartnerID() {
+        return partnerID;
+    }
+
+    public void setPartnerID(int partnerID) {
+        this.partnerID = partnerID;
+    }
+
+    public int getOrderQuantityTotal() {
+        return orderQuantityTotal;
+    }
+
+    public void setOrderQuantityTotal(int orderQuantityTotal) {
+        this.orderQuantityTotal = orderQuantityTotal;
     }
 
     public String getStatus() {
@@ -91,4 +95,5 @@ public class Order extends PanacheEntity {
     public void setStatus(String status) {
         this.status = status;
     }
+
 }
